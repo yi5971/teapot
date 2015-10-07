@@ -19,8 +19,6 @@ export USERSPACE_LIBS_DIR
 export USERSPACE_TOOLS_DIR
 
 
-.PHONY:all libteapot-amd64.so libteapot-i386.so clean
-
 #-f后面接配置参数，PIC表示位置无关代码，动态库必须用
 CFLAGS = -fPIC -I$(INCLUDE_DIR)/include
 
@@ -36,8 +34,6 @@ LIBS +=
 CFLAGS  +=  -m32 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 
 endif
-
-
 
 libjson_objs = \
 	jsonc/arraylist.o \
@@ -55,17 +51,22 @@ libthreadpool_objs = threadpool/threadpool.o
 
 SHAREOBJS = \
 	channel/ioctl/ioctl.o \
+	channel/channel.o \
 	$(libjson_objs) \
 	$(libthreadpool_objs)
 
-all:libteapot.so
-	$(MAKE) -C test
-	$(MAKE) -C db
-# 	-C 表示到指定目录下，再执行make
+
+.PHONY:all libteapot-amd64.so libteapot-i386.so test db clean
+
+all:libteapot.so test
 
 libteapot.so: $(SHAREOBJS)
 	$(CC) ${LDFLAGS} ${CFLAGS} -shared -o $@ $^
-	
+	@echo 
+	@echo "Move libteapot.so to /lib ...."
+	cp libteapot.so /lib
+	ldconfig
+	@echo "Move Success!....."
 
 libteapot-i386.so:
 	$(RM) $(SHAREOBJS) libteapot.so
@@ -79,8 +80,15 @@ libteapot-amd64.so:
 	mv -f libteapot.so $@
 	$(RM) $(SHAREOBJS)
 
+# 	-C 表示到指定目录下，再执行make
+test:
+	$(MAKE) -C test
+	
+db:
+	$(MAKE) -C db
+
 clean:
 	$(MAKE) -C test clean
-	$(MAKE) -C test clean
+	$(MAKE) -C db clean
 	$(RM) libteapot.so $(SHAREOBJS)
 	$(RM) $(USERSPACE_INCLUDE_DIR)/* $(USERSPACE_LIBS_DIR)/* $(USERSPACE_TOOLS_DIR)/*

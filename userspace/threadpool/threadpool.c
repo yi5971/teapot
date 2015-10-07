@@ -88,7 +88,7 @@ void *thread_routine(void *arg)
 	struct thread_pool *pool = (struct thread_pool *)arg;
 	struct thread_pool_worker *worker;
 
-    printf("starting thread 0x%x\n", pthread_self());
+    printf("starting thread 0x%ld\n", pthread_self());
     while(1)
 	{
     	pthread_mutex_lock(&(pool->queue_lock));
@@ -97,7 +97,7 @@ void *thread_routine(void *arg)
         pthread_cond_wait是一个原子操作，等待前会解锁，唤醒后会加锁*/
         while(!pool->cur_queue_size && pool->shutdown == THREAD_POOL_ON)
 		{
-			printf("thread 0x%x is waiting\n", pthread_self());
+			printf("thread 0x%ld is waiting\n", pthread_self());
 			pthread_cond_wait(&(pool->queue_ready), &(pool->queue_lock));
 		}
 
@@ -106,11 +106,11 @@ void *thread_routine(void *arg)
 		{
 			/*遇到break,continue,return等跳转语句，千万不要忘记先解锁*/
 			pthread_mutex_unlock(&(pool->queue_lock));
-			printf("thread 0x%x will exit\n", pthread_self());
+			printf("thread 0x%ld will exit\n", pthread_self());
 			pthread_exit(NULL);
 		}
 
-        printf("thread 0x%x is starting to work\n", pthread_self());
+        printf("thread 0x%ld is starting to work\n", pthread_self());
 		/*等待队列长度减去1，并取出链表中的头元素*/
 		pool->cur_queue_size--;
 		worker = pool->queue_head;

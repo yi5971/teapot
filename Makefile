@@ -17,14 +17,18 @@
 	INCLUDE_DIR := $(shell pwd)/include
 	export INCLUDE_DIR
 
-.PHONY : all android clean amd64 i386
+.PHONY : all android clean amd64 i386 userspace
 
 #HOOK=PATCH ZERO_USER=ON 
 all:
 	$(MAKE) DEBUG=ON -C $(KERNELDIR) M=$(PWD) modules
 #	$(MAKE) DEBUG=ON -C $(KERNELDIR) M=$(PWD)/path_dac modules
+	@echo
 	$(MAKE) -C userspace
-	#$(MAKE) -C client
+#	$(MAKE) -C client
+	
+userspace:
+	$(MAKE) -C userspace
 	
 amd64:	
 #	¹¹Ôìbuild±àÒëÄ¿Â¼

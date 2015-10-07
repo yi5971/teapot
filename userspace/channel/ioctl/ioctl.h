@@ -9,7 +9,7 @@
 #define TEAPOTSET_USERSPACE_CHANNEL_IOCTL_IOCTL_H_
 
 
-int teapot_ioctl(unsigned long cmd,unsigned long param);
+int teapot_ioctl(unsigned int nr,unsigned long param);
 
 
 #endif /* TEAPOTSET_USERSPACE_CHANNEL_IOCTL_IOCTL_H_ */

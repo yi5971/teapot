@@ -7,20 +7,17 @@
 
 #include <stdio.h>
 #include <sys/ioctl.h>
-#include "../channel/ioctl/ioctl.h"
 #include "../../include/channel.h"
-
-#define TEAPOT_MISC_DEVICE_TYPE  0x7f
-#define TEAPOT_IOCTL_TEST _IO(TEAPOT_MISC_DEVICE_TYPE, 2)
+#include "../channel/channel.h"
 
 int main(int argc, char *argv[])
 {
 	int rc;
+	int type = TEAPOT_CHANNEL_TYPE_SET(TEAPOT_CHANNEL_TYPE_IOCTL, TEAPOT_CHANNEL_DATA_TYPE_CMD);
 
-	rc = teapot_ioctl(TEAPOT_IOCTL_TEST, NULL);
+	rc = teapot_kernel_channel(type, NULL, 2);
 
 	printf("rc = %d\n", rc);
-	printf("TEAPOT_CHANNEL_IOCTL_KERNEL_READ:%d\n", TEAPOT_CHANNEL_IOCTL_KERNEL_READ);
 
 	return 0;
 }

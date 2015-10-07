@@ -9,7 +9,6 @@
 all:
 	$(MAKE) -C sqlite3
 	@echo "\n\tBuild db end.......\n\n"
-# 	-C 表示到指定目录下，再执行make
 
 clean:
 	$(MAKE) -C sqlite3 clean 

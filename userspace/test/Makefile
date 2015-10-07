@@ -4,7 +4,8 @@ LDFLAGS += -L$(USERSPACE_LIBS_DIR)
 
 
 
-test = test_ioctl test_threadpool test_mutex test_port test_proc test_ipc test_blob test_fcntl test_flock test_syslog test_parse_dir
+test = test_ioctl test_threadpool test_mutex test_port test_proc test_ipc test_blob test_fcntl \
+	test_flock test_syslog test_parse_dir test_mnt test_clone test_socket test_route test_tty
 
 
 all:$(test)
@@ -38,10 +39,25 @@ test_blob:test_blob.o
 	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS} -lsqlite3
 	
 test_syslog:test_syslog.o
-	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS} -lsqlite3
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
 
 test_parse_dir:test_parse_dir.o
-	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS} -lsqlite3
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
+
+test_mnt:test_mnt.o
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
+	
+test_clone:test_clone.o
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
 			
+test_socket:test_socket.o
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
+	
+test_route:test_route.o
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
+
+test_tty:test_tty.o
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS} -lutil
+	
 clean:
 	-$(RM) *.o  $(test)

@@ -12,8 +12,10 @@
 
 #define TEAPOT_MISC_DEV "/dev/teapot"
 
+#define TEAPOT_MISC_DEVICE_TYPE  0x7f
+#define TEAPOT_IOCTL(nr) _IO(TEAPOT_MISC_DEVICE_TYPE, (nr))
 
-int teapot_ioctl(unsigned long cmd,unsigned long param)
+int teapot_ioctl(unsigned int nr,unsigned long param)
 {
 	int fd, rc = 0;
 
@@ -23,7 +25,7 @@ int teapot_ioctl(unsigned long cmd,unsigned long param)
 		return -1;
 	}
 
-	rc = ioctl(fd, cmd, param);
+	rc = ioctl(fd, TEAPOT_IOCTL(nr), param);
 	if(rc < 0){
 		printf("fail ioctl\n");
 		rc = -1;

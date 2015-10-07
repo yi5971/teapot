@@ -107,10 +107,24 @@ int ipc_stop_listening(char *addr)
 
 int main(int argc, char *argv[])
 {
-	if(*argv[1] == 's')
-		ipc_start_listening(IPC_ADDR);
-	if(*argv[1] == 'c')
-		ipc_send_message(IPC_ADDR, argv[2], strlen(argv[2]));
+	int opt;
+
+	if(argc == 1){
+		sleep(20);
+		return -1;
+	}
+
+	while ((opt = getopt(argc, argv, "sc")) != -1)
+	{
+		switch (opt){
+		case 's':
+			ipc_start_listening(IPC_ADDR);
+			break;
+		case 'c':
+			ipc_send_message(IPC_ADDR, argv[2], strlen(argv[2]));
+			break;
+		}
+	}
 
 	return 0;
 }

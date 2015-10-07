@@ -4,7 +4,12 @@
 
 int main(int agrv, char *argc[])
 {
-	syslog(LOG_USER | LOG_DEBUG, "func name [%s]\n", argc[0]);
+	int i=0;
+	while(1){
+//	syslog(LOG_USER | LOG_DEBUG, "func name [%s], %d\n", argc[0], i);
+	printf("%d\n", i++);
+	sleep(5);
+        }	
 	return 0;
 }
 
