@@ -2,6 +2,39 @@
 #include <unistd.h>
 #include <pty.h>
 
+#define MAXPATHLEN 1024
+
+struct pty_info {
+	char name[MAXPATHLEN];
+	int master;
+	int slave;
+	int busy;
+} pty_info [2];
+
+int tty_func(void)
+{
+	int i;
+	struct pty_info *pty = pty_info;
+
+	for(i=0;i<2;i++,pty++){
+		if(!openpty(&pty->master, &pty->slave, pty->name, NULL, NULL))
+		{
+			printf("%d, %d, %s\n", pty->master, pty->slave, pty->name);
+			pty->busy = 0;
+		}
+	}
+
+	sleep(1);
+
+	pty = pty_info;
+	for(i=0;i<2;i++,pty++){
+		close(pty->master);
+		close(pty->slave);
+	}
+
+	return 0;
+}
+
 int main(int argv, char *argc[])
 {
 	int opt;
@@ -10,6 +43,7 @@ int main(int argv, char *argc[])
 	{
 		switch(opt){
 		case 's':
+			tty_func();
 			break;
 		}
 	}
@@ -20,17 +54,7 @@ int main(int argv, char *argc[])
 
 	printf("tty:%s\n", tty);
 
-	int master, slave;
-	char name[1024];
-	if(!openpty(&master, &slave, name, NULL, NULL))
-	{
-		printf("%d, %d, %s\n", master, slave, name);
 
-		sleep(10);
-
-		close(master);
-		close(slave);
-	}
 
 
 	return 0;
