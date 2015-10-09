@@ -8,7 +8,7 @@
 #include "channel.h"
 #include "./ioctl/ioctl.h"
 
-int teapot_channel_ioctl(int type, void *data, int size)
+static int teapot_channel_ioctl(int type, void *data, int size)
 {
 	switch(TEAPOT_CHANNEL_DATA_TYPE_GET(type))
 	{

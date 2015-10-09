@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <sys/ioctl.h>
-#include "../../include/channel.h"
 #include "../channel/channel.h"
 
 int main(int argc, char *argv[])
