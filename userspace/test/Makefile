@@ -1,6 +1,6 @@
 LIBS += -lteapot -lpthread
 CFLAGS += -fPIC -g -I$(USERSPACE_INCLUDE_DIR)
-#LDFLAGS += -L$(USERSPACE_LIBS_DIR)
+LDFLAGS += -L$(USERSPACE_LIBS_DIR)
 
 
 
@@ -21,7 +21,7 @@ test_mutex:test_mutex.o
 	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
 
 test_fcntl:test_fcntl.o
-	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}
+	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS} -lsqlite3
 
 test_flock:test_flock.o
 	$(CC) ${CFLAGS} $^ -o $@ ${LDFLAGS} ${LIBS}

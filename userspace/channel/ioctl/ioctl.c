@@ -8,16 +8,17 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include "../channel.h"
 #include "ioctl.h"
 
 #define TEAPOT_MISC_DEV "/dev/teapot"
 
 #define TEAPOT_MISC_DEVICE_TYPE  0x7f
-#define TEAPOT_IOCTL(nr) _IO(TEAPOT_MISC_DEVICE_TYPE, (nr))
 
-int teapot_ioctl(unsigned int nr,unsigned long param)
+int teapot_channel_ioctl(int type, void *data, int size)
 {
-	int fd, rc = 0;
+	int fd, cmd, rc = 0;
+	struct teapot_ioctl_data unit;
 
 	fd = open(TEAPOT_MISC_DEV, O_RDWR);
 	if(fd == -1){
@@ -25,7 +26,11 @@ int teapot_ioctl(unsigned int nr,unsigned long param)
 		return -1;
 	}
 
-	rc = ioctl(fd, TEAPOT_IOCTL(nr), param);
+	unit.len = size;
+	unit.data = data;
+	cmd = _IOWR(TEAPOT_MISC_DEVICE_TYPE, type, unit);
+
+	rc = ioctl(fd, cmd, &unit);
 	if(rc < 0){
 		printf("fail ioctl\n");
 		rc = -1;

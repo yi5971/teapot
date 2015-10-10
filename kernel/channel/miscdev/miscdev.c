@@ -5,9 +5,14 @@
  *      Author: Administrator
  */
 
+#include <asm-generic/ioctl.h>
 #include <linux/fs.h>
+#include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/miscdevice.h>
+#include <asm/uaccess.h>
+#include <channel.h>
+#include "../channel.h"
 #include "miscdev.h"
 
 
@@ -44,13 +49,20 @@ static int teapot_miscdev_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+
+
 long teapot_miscdev_ioctl(struct file *filp, unsigned int cmd,
 		unsigned long param)
 {
-	printk("ioctl cmd:[%x][%x]\n", cmd, _IOC_NR(cmd));
+	int nr, data_type = _IOC_NR(cmd), size = _IOC_SIZE(cmd);
+
+	printk("ioctl cmd:[%x][%x][%x][%x][%x]\n", cmd, _IOC_DIR(cmd), _IOC_TYPE(cmd), data_type, size);
 	printk("ioctl param:%lx\n", param);
 
-	return 0;
+	nr = TEAPOT_CHANNEL_TYPE_SET(TEAPOT_CHANNEL_TYPE_IOCTL, data_type, 0);
+
+//	return 0;
+	return teapot_channel_transaction(nr, (void *)param, size);
 }
 
 static const struct file_operations teapot_miscdev_fops = {
@@ -66,12 +78,53 @@ static struct miscdevice teapot_miscdev = {
 		.fops = &teapot_miscdev_fops,
 };
 
+
+static int teapot_ioctl_func(int data_type, void *data, int size)
+{
+	printk("unit:%p, size:%d\n", data, size);
+
+	if(data_type == TEAPOT_CHANNEL_DATA_TYPE_CMD_TEST && size == sizeof(struct teapot_ioctl_data))
+	{
+		struct teapot_ioctl_data unit;
+		void *tmp;
+
+		if(copy_from_user(&unit, data, size)){
+			printk("read data header error\n");
+			return -EFAULT;
+		}
+
+		printk("data:%p, size:%d\n", unit.data, unit.len);
+		tmp = unit.data;
+		if(unit.len > PAGE_SIZE)
+			unit.data = vmalloc(unit.len);
+		else
+			unit.data = kmalloc(unit.len, GFP_KERNEL);
+
+		if(!unit.data)
+			return -ENOMEM;
+
+		if(copy_from_user(unit.data, tmp, unit.len)){
+			printk("read data error\n");
+			return -EFAULT;
+		}
+
+		printk("unit.data:%s\n", unit.data);
+	}
+
+	return -1;
+}
+
 int miscdev_init(void)
 {
 	int rc;
 
 	rc = misc_register(&teapot_miscdev);
+	if(rc)
+		goto out;
 
+	rc = teapot_channel_register(TEAPOT_CHANNEL_TYPE_IOCTL, TEAPOT_CHANNEL_DATA_TYPE_CMD_TEST, teapot_ioctl_func);
+
+out:
 	return rc;
 
 }
@@ -79,4 +132,5 @@ int miscdev_init(void)
 void miscdev_exit(void)
 {
 	misc_deregister(&teapot_miscdev);
+	teapot_channel_unregister(TEAPOT_CHANNEL_TYPE_IOCTL, TEAPOT_CHANNEL_DATA_TYPE_CMD_TEST);
 }

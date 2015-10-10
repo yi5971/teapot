@@ -63,10 +63,15 @@ all:libteapot.so test
 libteapot.so: $(SHAREOBJS)
 	$(CC) ${LDFLAGS} ${CFLAGS} -shared -o $@ $^
 	@echo 
-	@echo "Move libteapot.so to /lib ...."
-	cp libteapot.so /lib
+	@echo "Move libteapot.so to ./libs/ ...."
+	mkdir -p ./libs/
+	cp libteapot.so ./libs/
 	ldconfig
 	@echo "Move Success!....."
+	export LD_LIBRARY_PATH=$(USERSPACE_LIBS_DIR):$LD_LIBRARY_PATH
+#	ln -s $(USERSPACE_LIBS_DIR)/*.so /usr/lib
+	ldconfig
+	
 
 libteapot-i386.so:
 	$(RM) $(SHAREOBJS) libteapot.so

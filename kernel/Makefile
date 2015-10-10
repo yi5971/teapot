@@ -1,3 +1,4 @@
+EXTRA_CFLAGS += -I$(INCLUDE_DIR)
 ifdef DEBUG
 EXTRA_CFLAGS += -DDEBUG
 endif
@@ -10,6 +11,7 @@ endif
 ARCH_$(ARCH)=1
 obj-m += teapot.o
 teapot-objs :=	main.o \
-				channel/channel.o channel/miscdev/miscdev.o
+				channel/channel.o channel/miscdev/miscdev.o \
+				utils/hook.o
 
 #endif
